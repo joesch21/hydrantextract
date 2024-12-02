@@ -32,9 +32,30 @@ const CameraCapture = ({ onCapture }) => {
     setIsCameraOn(false);
   };
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Image = reader.result;
+  
+        // Set the preview image
+        setPreview(base64Image);
+  
+        // Pass the image to the parent component
+        onCapture(base64Image);
+  
+        // Store the image in localStorage (or sessionStorage)
+        localStorage.setItem('uploadedImage', base64Image);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+
   return (
     <div>
-      {!isCameraOn && <button onClick={startCamera}>Start Camera</button>}
+      <button onClick={startCamera} disabled={isCameraOn}>Use Camera</button>
       {isCameraOn && (
         <div>
           <video ref={videoRef} autoPlay playsInline style={{ width: '100%' }} />
@@ -42,6 +63,10 @@ const CameraCapture = ({ onCapture }) => {
         </div>
       )}
       <canvas ref={canvasRef} style={{ display: 'none' }} />
+      <div>
+        <h3>Or Upload a Photo:</h3>
+        <input type="file" accept="image/*" onChange={handleFileUpload} />
+      </div>
     </div>
   );
 };
