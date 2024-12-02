@@ -7,14 +7,19 @@ const CameraCapture = ({ onCapture }) => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment', // Use rear camera
+        },
+      });
       videoRef.current.srcObject = stream;
       setIsCameraOn(true);
     } catch (error) {
       console.error('Error accessing the camera:', error);
-      alert('Unable to access the camera.');
+      alert('Unable to access the camera. Please check your permissions.');
     }
   };
+  
 
   const captureImage = () => {
     const video = videoRef.current;
