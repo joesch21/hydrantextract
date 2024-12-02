@@ -1,31 +1,37 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 const CameraCapture = ({ onCapture }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [preview, setPreview] = useState(null); // For previewing uploaded or captured images
+  const [isVideoReady, setIsVideoReady] = useState(false); // Ensure video element is ready
 
+  // Ensure video element is ready
+  useEffect(() => {
+    if (videoRef.current) {
+      setIsVideoReady(true); // Set video as ready once it's mounted
+    }
+  }, [videoRef]);
+
+  // Start the camera
   const startCamera = async () => {
     try {
-      // Ensure the video element is available
-      if (!videoRef.current) {
+      if (!isVideoReady) {
         alert('Camera element is not ready. Please refresh the page and try again.');
         return;
       }
-  
-      // Request camera access with preferred facing mode
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: 'environment' }, // Prefer rear camera
         },
       });
-  
+
       // Attach the camera stream to the video element
       videoRef.current.srcObject = stream;
       setIsCameraOn(true);
     } catch (error) {
-      // Handle any errors during camera access
       console.error('Error accessing the camera:', error);
       if (error.name === 'NotAllowedError') {
         alert('Camera access was denied. Please allow camera permissions in your browser settings.');
@@ -36,7 +42,6 @@ const CameraCapture = ({ onCapture }) => {
       }
     }
   };
-  
 
   // Capture an image from the camera
   const captureImage = () => {
