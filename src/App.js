@@ -8,7 +8,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>Photo to Text PWA</h1>
+      <h1>Docket Uploader</h1>
       {!image && <CameraCapture onCapture={(image) => setImage(image)} />}
       {image && <TextExtractor image={image} />}
     </div>

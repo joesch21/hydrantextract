@@ -23,11 +23,11 @@ const PhotoUpload = ({ onCapture }) => {
 
   return (
     <div>
-      <h1>Photo to Text</h1>
+      
 
       {/* File Upload */}
       <div>
-        <h3>Upload a Photo:</h3>
+        <h3>Upload a Docket:</h3>
         <input type="file" accept="image/*" onChange={handleFileUpload} />
       </div>
 
