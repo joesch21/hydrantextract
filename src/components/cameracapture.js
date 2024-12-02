@@ -6,21 +6,37 @@ const CameraCapture = ({ onCapture }) => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [preview, setPreview] = useState(null); // For previewing uploaded or captured images
 
-  // Start the camera
   const startCamera = async () => {
     try {
+      // Ensure the video element is available
+      if (!videoRef.current) {
+        alert('Camera element is not ready. Please refresh the page and try again.');
+        return;
+      }
+  
+      // Request camera access with preferred facing mode
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: 'environment' }, // Prefer rear camera
         },
       });
+  
+      // Attach the camera stream to the video element
       videoRef.current.srcObject = stream;
       setIsCameraOn(true);
     } catch (error) {
+      // Handle any errors during camera access
       console.error('Error accessing the camera:', error);
-      alert(`Unable to access the camera: ${error.message}. Please check your permissions.`);
+      if (error.name === 'NotAllowedError') {
+        alert('Camera access was denied. Please allow camera permissions in your browser settings.');
+      } else if (error.name === 'NotFoundError') {
+        alert('No camera was found on this device.');
+      } else {
+        alert(`Unable to access the camera: ${error.message}. Please check your permissions.`);
+      }
     }
   };
+  
 
   // Capture an image from the camera
   const captureImage = () => {
