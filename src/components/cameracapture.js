@@ -4,23 +4,25 @@ const CameraCapture = ({ onCapture }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
+  const [preview, setPreview] = useState(null); // For previewing uploaded or captured images
 
+  // Start the camera
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: 'environment', // Use rear camera
+          facingMode: { ideal: 'environment' }, // Prefer rear camera
         },
       });
       videoRef.current.srcObject = stream;
       setIsCameraOn(true);
     } catch (error) {
       console.error('Error accessing the camera:', error);
-      alert('Unable to access the camera. Please check your permissions.');
+      alert(`Unable to access the camera: ${error.message}. Please check your permissions.`);
     }
   };
-  
 
+  // Capture an image from the camera
   const captureImage = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -29,49 +31,73 @@ const CameraCapture = ({ onCapture }) => {
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageData = canvas.toDataURL('image/png');
-    onCapture(imageData);
+    setPreview(imageData); // Show the captured image as a preview
+    onCapture(imageData); // Pass the image data to the parent component
 
-    // Stop camera
-    const stream = video.srcObject;
-    stream.getTracks().forEach((track) => track.stop());
+    // Stop the camera
+    stopCamera();
+  };
+
+  // Stop the camera stream
+  const stopCamera = () => {
+    const stream = videoRef.current?.srcObject;
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
     setIsCameraOn(false);
   };
 
+  // Handle file upload
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         const base64Image = reader.result;
-  
-        // Set the preview image
-        setPreview(base64Image);
-  
-        // Pass the image to the parent component
-        onCapture(base64Image);
-  
-        // Store the image in localStorage (or sessionStorage)
+
+        setPreview(base64Image); // Show the uploaded image as a preview
+        onCapture(base64Image); // Pass the image data to the parent component
+
+        // Optionally, store the image in localStorage
         localStorage.setItem('uploadedImage', base64Image);
       };
       reader.readAsDataURL(file);
     }
   };
-  
 
   return (
     <div>
-      <button onClick={startCamera} disabled={isCameraOn}>Use Camera</button>
-      {isCameraOn && (
-        <div>
-          <video ref={videoRef} autoPlay playsInline style={{ width: '100%' }} />
-          <button onClick={captureImage}>Capture Image</button>
-        </div>
-      )}
+      <h1>Photo to Text</h1>
+
+      {/* Camera Controls */}
+      <div>
+        <button onClick={startCamera} disabled={isCameraOn}>
+          Use Camera
+        </button>
+        {isCameraOn && (
+          <div>
+            <video ref={videoRef} autoPlay playsInline style={{ width: '100%' }} />
+            <button onClick={captureImage}>Capture Image</button>
+          </div>
+        )}
+      </div>
+
+      {/* Hidden canvas for capturing image */}
       <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+      {/* File Upload */}
       <div>
         <h3>Or Upload a Photo:</h3>
         <input type="file" accept="image/*" onChange={handleFileUpload} />
       </div>
+
+      {/* Preview Section */}
+      {preview && (
+        <div>
+          <h3>Preview:</h3>
+          <img src={preview} alt="Preview" style={{ maxWidth: '100%', marginTop: '10px' }} />
+        </div>
+      )}
     </div>
   );
 };
