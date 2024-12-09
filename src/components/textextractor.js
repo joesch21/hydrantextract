@@ -18,8 +18,9 @@ const TextExtractor = ({ image, onSubmit }) => {
     walkaround: "Completed",
     ticket: "",
   });
+  const [isFileLoaded, setIsFileLoaded] = useState(false); // File loaded state
+  const [isTextExtracted, setIsTextExtracted] = useState(false); // Text extraction state
 
-  // Function to extract text from the image using Tesseract
   const extractText = async () => {
     if (!image) return;
     setProcessing(true);
@@ -32,9 +33,9 @@ const TextExtractor = ({ image, onSubmit }) => {
 
       setText(text);
 
-      // Parse the extracted text into structured data
       const parsedData = parseTextToFormData(text);
       setFormData(parsedData);
+      setIsTextExtracted(true); // Enable the submit button
     } catch (error) {
       console.error("Error processing image:", error);
       setText("Error recognizing text.");
@@ -43,7 +44,6 @@ const TextExtractor = ({ image, onSubmit }) => {
     }
   };
 
-  // Parse extracted text into structured form data
   const parseTextToFormData = (extractedText) => {
     const lines = extractedText.split("\n");
 
@@ -53,16 +53,14 @@ const TextExtractor = ({ image, onSubmit }) => {
       time: extractField(lines, /Time Finish[:\s]+([\d:]+ [APMapm]+)/i),
       bay: extractField(lines, /Stand[:\s]+(.+)/i),
       registration: extractField(lines, /Reg. No[:\s]+(.+)/i),
-      uplift: extractUplift(lines), // Extract uplift with proper parsing
+      uplift: extractUplift(lines),
       dp: "",
       flow: "",
-      hose: "",
       walkaround: "Completed",
       ticket: extractField(lines, /Ticket No[:\s]+(.+)/i),
     };
   };
 
-  // Extract the uplift value and convert it to a number
   const extractUplift = (lines) => {
     for (const line of lines) {
       const match = line.match(/Total Uplift[:\s]+([\d,]+)\s*L/i);
@@ -73,7 +71,6 @@ const TextExtractor = ({ image, onSubmit }) => {
     return "0"; // Default to 0 if not found
   };
 
-  // Generic field extraction utility
   const extractField = (lines, regex) => {
     for (const line of lines) {
       const match = line.match(regex);
@@ -82,20 +79,18 @@ const TextExtractor = ({ image, onSubmit }) => {
     return "";
   };
 
-  // Handle changes to form fields
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Handle form submission
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Data Submitted:", formData);
 
     try {
       await insertData(formData); // Insert data into Dexie
-      onSubmit(); // Refresh data in the parent component
+      onSubmit(); // Refresh the data list in the parent component
       alert("Data submitted successfully!");
     } catch (error) {
       console.error("Error submitting form data:", error);
@@ -105,18 +100,35 @@ const TextExtractor = ({ image, onSubmit }) => {
 
   return (
     <div>
-      {image && <img src={image} alt="Captured" style={{ maxWidth: "100%" }} />}
-      <button onClick={extractText} disabled={processing}>
-        {processing ? "Processing..." : "Extract Text"}
-      </button>
+      {image && (
+        <img
+          src={image}
+          alt="Captured"
+          style={{ maxWidth: "100%" }}
+          onLoad={() => setIsFileLoaded(true)} // Trigger on file load
+        />
+      )}
+
+      <div className="file-container">
+        <button
+          className="extract-button"
+          disabled={!isFileLoaded} // Disable if file is not loaded
+          onClick={extractText}
+        >
+          {processing ? "Processing..." : "Extract Text"}
+        </button>
+      </div>
+
       <div>
         <h3>Extracted Text:</h3>
         <p>{text || "No text yet!"}</p>
       </div>
+
       <RefuelForm
         formData={formData}
         handleFormChange={handleFormChange}
         handleFormSubmit={handleFormSubmit}
+        isSubmitEnabled={isTextExtracted} // Enable only after text extraction
       />
     </div>
   );

@@ -20,8 +20,8 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 700px;
-  position: relative; /* For positioning the Reset button */
-  min-height: 450px; /* Ensure enough height for all elements */
+  position: relative; /* For positioning elements like Reset button */
+  min-height: 450px;
   box-sizing: border-box;
 }
 
@@ -33,11 +33,11 @@ button {
   border-radius: 8px;
   cursor: pointer;
   margin: 10px 0;
-  width: 80%; /* Ensure buttons are easily tappable */
-  max-width: 400px;
+  width: 80%;
+  max-width: 400px; /* Ensure buttons are easily tappable */
 }
 
-/* Button Colors for Sequence */
+/* Button Colors and Sequence */
 button.extract-text {
   background-color: #4caf50; /* Green: First action */
   color: white;
@@ -59,8 +59,8 @@ button.submit-data:hover {
 button.reset-button {
   background-color: #f44336; /* Red: Final action */
   color: white;
-  position: fixed;
-  top: 20px; /* Fixed placement */
+  position: fixed; /* Fixed to the top right */
+  top: 20px;
   right: 20px;
   padding: 10px 20px;
   font-size: 14px;
@@ -68,6 +68,33 @@ button.reset-button {
 
 button.reset-button:hover {
   background-color: #d32f2f;
+}
+
+/* Disabled Button Styling */
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Flashing Animation */
+@keyframes flash {
+  0% {
+    background-color: #f8d210; /* Bright yellow */
+    color: black;
+  }
+  50% {
+    background-color: #f1c40f; /* Slightly darker yellow */
+    color: black;
+  }
+  100% {
+    background-color: #f8d210;
+    color: black;
+  }
+}
+
+/* Flashing Buttons */
+.flash {
+  animation: flash 1.5s infinite;
 }
 
 /* Image Styling */
