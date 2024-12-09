@@ -63,14 +63,14 @@ const App = () => {
         />
       )}
 
-      {/* Step 2: Extract Text */}
+      {/* Step 2:  */}
       {image && (
         <button
           className={`extract-button ${!extracted ? "flash" : ""}`}
           onClick={() => setExtracted(true)}
           disabled={extracted}
         >
-          Extract Text
+          
         </button>
       )}
 

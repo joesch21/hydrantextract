@@ -115,13 +115,13 @@ const TextExtractor = ({ image, onSubmit }) => {
           disabled={!isFileLoaded} // Disable if file is not loaded
           onClick={extractText}
         >
-          {processing ? "Processing..." : "Extract Text"}
+          {processing ? "Processing..." : "Download Text"}
         </button>
       </div>
 
       <div>
         <h3>Extracted Text:</h3>
-        <p>{text || "No text yet!"}</p>
+        <p>{text || "No text downloaded!"}</p>
       </div>
 
       <RefuelForm
