@@ -1,6 +1,6 @@
 {
-  "short_name": "Photo2Text",
-  "name": "Photo to Text PWA",
+  "short_name": "TankerDocketUploader",
+  "name": "TankerDocketUploader",
   "icons": [
     {
       "src": "icon-192x192.png",
