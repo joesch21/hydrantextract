@@ -1,74 +1,99 @@
 import React, { useState, useEffect } from "react";
 import CameraCapture from "./components/cameracapture";
 import TextExtractor from "./components/textextractor";
-import { fetchData, clearData } from "./components/dbHelper"; // Use clearData
+import { fetchData, clearData } from "./components/dbHelper";
 import "./App.css";
 
 const App = () => {
   const [image, setImage] = useState(null);
+  const [extracted, setExtracted] = useState(false);
   const [storedData, setStoredData] = useState([]);
-  const [totalUplift, setTotalUplift] = useState(0); // Running total of uplifts
+  const [runningTotal, setRunningTotal] = useState(0);
 
-  // Function to load data from Dexie
+  // Load stored data and calculate the running total
   const loadStoredData = async () => {
     try {
-      const data = await fetchData(); // Fetch data from the database
+      const data = await fetchData();
       console.log("Fetched records:", data);
-      setStoredData(data || []); // Set the state with fetched data
 
-      // Calculate the running total of uplift
       const total = data.reduce((sum, record) => {
         const uplift = parseFloat(record.uplift) || 0;
         return sum + uplift;
       }, 0);
-      setTotalUplift(total);
+
+      setStoredData(data || []);
+      setRunningTotal(total);
     } catch (error) {
       console.error("Error fetching stored data:", error);
     }
   };
 
-  // Reset the database
-  const handleResetData = async () => {
-    if (window.confirm("This will reset all data! Are you sure?")) {
-      try {
-        await clearData(); // Clear the Dexie database
-        setStoredData([]); // Reset the local state
-        setTotalUplift(0); // Reset the total uplift
-        alert("Data reset successfully!");
-      } catch (error) {
-        console.error("Error resetting data:", error);
-        alert("Failed to reset data.");
-      }
-    }
-  };
-
-  // Handle file selection
-  const handleFileSelection = (file) => {
-    console.log("File selected:", file);
-    setImage(file); // Set the selected image
-  };
-
   useEffect(() => {
-    // Load stored data on component mount
     loadStoredData();
   }, []);
+
+  const handleNextFlight = () => {
+    setImage(null);
+    setExtracted(false);
+  };
+
+  const handleResetData = async () => {
+    const confirmReset = window.confirm(
+      "This will delete all stored data. Are you sure you want to reset? This is typically done at the end of the shift."
+    );
+    if (confirmReset) {
+      await clearData();
+      setStoredData([]);
+      setRunningTotal(0);
+      alert("All data has been reset!");
+    }
+  };
 
   return (
     <div className="App">
       <h1>Docket Uploader</h1>
-      <h2>Total Uplift: {totalUplift} L</h2>
+      <h2>Running Total: {runningTotal} L</h2>
+
+      {/* Step 1: Capture Image */}
       {!image && (
-        <CameraCapture onCapture={(image) => handleFileSelection(image)} />
-      )}
-      {image && (
-        <TextExtractor
-          image={image}
-          onSubmit={loadStoredData} // Refresh data after form submission
+        <CameraCapture
+          onCapture={(capturedImage) => {
+            setImage(capturedImage);
+          }}
         />
       )}
-      <button className="reset-button" onClick={handleResetData}>
-        Reset Data
-      </button>
+
+      {/* Step 2: Extract Text */}
+      {image && (
+        <button
+          className={`extract-button ${!extracted ? "flash" : ""}`}
+          onClick={() => setExtracted(true)}
+          disabled={extracted}
+        >
+          Extract Text
+        </button>
+      )}
+
+      {/* Step 3: Display Extracted Text & Submit Data */}
+      {image && extracted && (
+        <>
+          <TextExtractor
+            image={image}
+            onSubmit={() => {
+              loadStoredData();
+            }}
+          />
+          {/* Submit Data Button */}
+          
+
+          {/* Next Flight Button */}
+          <button className="next-docket-button" onClick={handleNextFlight}>
+            Enter Next Flight
+          </button>
+        </>
+      )}
+
+      {/* Stored Data Display */}
       <h2>Stored Data:</h2>
       <ul>
         {storedData.map((record) => (
@@ -80,6 +105,11 @@ const App = () => {
           </li>
         ))}
       </ul>
+
+      {/* Reset Data Button */}
+      <button className="reset-button" onClick={handleResetData}>
+        Reset Data
+      </button>
     </div>
   );
 };

@@ -5,10 +5,12 @@ body {
   padding: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start; /* Allow scrolling */
+  height: auto;
+  min-height: 100vh;
   background-color: #f5f5f5;
-  overflow: hidden; /* Prevent scrolling on smaller screens */
+  overflow-y: auto; /* Enable vertical scrolling */
+  box-sizing: border-box;
 }
 
 /* Application Container Styling */
@@ -20,65 +22,84 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 700px;
-  position: relative; /* For positioning elements like Reset button */
-  min-height: 450px;
+  position: relative; /* For positioning elements inside */
+  min-height: 450px; /* Ensure enough height for all elements */
+  margin: 20px 0; /* Add spacing around the App container */
   box-sizing: border-box;
 }
 
 /* General Button Styling */
 button {
   padding: 15px 25px;
-  font-size: 20px;
+  font-size: 18px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin: 10px 0;
   width: 80%;
-  max-width: 400px; /* Ensure buttons are easily tappable */
+  max-width: 400px;
+  margin: 10px 0;
 }
 
-/* Button Colors and Sequence */
-button.extract-text {
-  background-color: #4caf50; /* Green: First action */
+/* Extract Button (Green) */
+button.extract-button {
+  background-color: #4caf50; /* Green */
   color: white;
 }
 
-button.extract-text:hover {
+button.extract-button:hover {
   background-color: #45a049;
 }
 
+button.extract-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Submit Button (Blue) */
 button.submit-data {
-  background-color: #2196f3; /* Blue: Second action */
-  color: white;
+  
+  color: rgb(46, 57, 104);
 }
 
 button.submit-data:hover {
   background-color: #1976d2;
 }
 
-button.reset-button {
-  background-color: #f44336; /* Red: Final action */
+button.submit-data:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Next Flight Button (Green) */
+button.next-docket-button {
+  background-color: #28a745;
   color: white;
-  position: fixed; /* Fixed to the top right */
+}
+
+button.next-docket-button:hover {
+  background-color: #218838;
+}
+
+/* Reset Button (Fixed Top-Right, Red) */
+button.reset-button {
+  background-color: #f44336;
+  color: white;
+  position: fixed;
   top: 20px;
   right: 20px;
   padding: 10px 20px;
   font-size: 14px;
+  border: none;
+  border-radius: 8px;
 }
 
 button.reset-button:hover {
   background-color: #d32f2f;
 }
 
-/* Disabled Button Styling */
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
 /* Flashing Animation */
 @keyframes flash {
-  0% {
+  0%, 100% {
     background-color: #f8d210; /* Bright yellow */
     color: black;
   }
@@ -86,15 +107,14 @@ button:disabled {
     background-color: #f1c40f; /* Slightly darker yellow */
     color: black;
   }
-  100% {
-    background-color: #f8d210;
-    color: black;
-  }
 }
 
-/* Flashing Buttons */
-.flash {
+/* File Input Button (Flashing Initially) */
+button.file-input {
   animation: flash 1.5s infinite;
+  background-color: #f8d210;
+  color: black;
+  border: 2px solid #333;
 }
 
 /* Image Styling */
@@ -104,7 +124,7 @@ img {
   border-radius: 5px;
 }
 
-/* Styling for "I Understand" Checkbox and Comment */
+/* Warning Box Styling */
 .warning-box {
   margin: 20px 0;
   text-align: center;
@@ -171,7 +191,7 @@ h2:first-of-type {
   }
 
   button {
-    font-size: 18px;
+    font-size: 16px;
     width: 90%;
   }
 
