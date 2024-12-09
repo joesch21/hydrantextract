@@ -9,6 +9,7 @@ const App = () => {
   const [image, setImage] = useState(null);
   const [storedData, setStoredData] = useState([]);
   const [totalUplift, setTotalUplift] = useState(0);
+  const [isResetChecked, setIsResetChecked] = useState(false);
 
   const loadStoredData = async () => {
     try {
@@ -37,9 +38,10 @@ const App = () => {
   }, [storedData]);
 
   const handleResetData = async () => {
-    // Display a confirmation warning
+    if (!isResetChecked) return;
+
     const confirmed = window.confirm(
-      "WARNING: This will reset all data! Are you sure you want to continue? It is recommended to reset data at the end of your shift."
+      "This will reset all data! Are you sure you want to proceed?"
     );
 
     if (confirmed) {
@@ -48,6 +50,7 @@ const App = () => {
         alert("All data has been reset!");
         setStoredData([]);
         setTotalUplift(0);
+        setIsResetChecked(false); // Reset the checkbox
       } catch (error) {
         console.error("Error resetting database:", error);
       }
@@ -60,9 +63,26 @@ const App = () => {
 
   return (
     <div className="App">
-      <button className="reset-button" onClick={handleResetData}>
-        Reset Data
-      </button>
+      <div className="reset-container">
+        <button
+          className="reset-button"
+          onClick={handleResetData}
+          disabled={!isResetChecked}
+        >
+          Reset Data
+        </button>
+        <div className="reset-warning">
+          <input
+            type="checkbox"
+            id="resetConfirm"
+            checked={isResetChecked}
+            onChange={(e) => setIsResetChecked(e.target.checked)}
+          />
+          <label htmlFor="resetConfirm">
+            I understand this will erase all stored data.
+          </label>
+        </div>
+      </div>
       <h1>Docket Uploader</h1>
       <h2>Total Uplift: {totalUplift.toFixed(2)} L</h2>
       {!image && <CameraCapture onCapture={(image) => setImage(image)} />}

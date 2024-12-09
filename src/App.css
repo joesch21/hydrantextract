@@ -40,9 +40,9 @@ button:disabled {
 
 /* Reset Button Styling */
 .reset-button {
-  position: bottom;
-  top: 600px; /* Vertical placement near the top */
-  right: 10px; /* Horizontal placement to the right */
+  position: fixed;
+  top: 20px; /* Vertical placement near the top */
+  right: 20px; /* Horizontal placement to the right */
   background-color: #ff4c4c;
   color: white;
   border: none;
@@ -90,6 +90,7 @@ h1 {
   color: #333;
 }
 
+/* Heading 2 Styling */
 h2 {
   margin-top: 10px;
   font-size: 20px;
@@ -102,7 +103,7 @@ h2:first-of-type {
   color: #007bff; /* Blue color for emphasis */
 }
 
-
+/* Next Docket Button Styling */
 .next-docket-button {
   margin-top: 20px;
   padding: 10px 20px;
