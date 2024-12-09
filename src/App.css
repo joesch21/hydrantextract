@@ -8,6 +8,7 @@ body {
   align-items: center;
   height: 100vh;
   background-color: #f5f5f5;
+  overflow: hidden; /* Prevent scrolling on smaller screens */
 }
 
 /* Application Container Styling */
@@ -20,55 +21,87 @@ body {
   width: 100%;
   max-width: 700px;
   position: relative; /* For positioning the Reset button */
-  min-height: 500px; /* Ensure a minimum height for consistent layout */
+  min-height: 450px; /* Ensure enough height for all elements */
+  box-sizing: border-box;
 }
 
 /* General Button Styling */
 button {
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color: #007BFF;
-  color: white;
+  padding: 15px 25px;
+  font-size: 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  margin: 10px 0;
+  width: 80%; /* Ensure buttons are easily tappable */
+  max-width: 400px;
 }
 
-button:disabled {
-  background-color: #cccccc;
+/* Button Colors for Sequence */
+button.extract-text {
+  background-color: #4caf50; /* Green: First action */
+  color: white;
 }
 
-/* Reset Button Styling */
-.reset-button {
+button.extract-text:hover {
+  background-color: #45a049;
+}
+
+button.submit-data {
+  background-color: #2196f3; /* Blue: Second action */
+  color: white;
+}
+
+button.submit-data:hover {
+  background-color: #1976d2;
+}
+
+button.reset-button {
+  background-color: #f44336; /* Red: Final action */
+  color: white;
   position: fixed;
-  top: 20px; /* Vertical placement near the top */
-  right: 20px; /* Horizontal placement to the right */
-  background-color: #ff4c4c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 15px;
-  cursor: pointer;
+  top: 20px; /* Fixed placement */
+  right: 20px;
+  padding: 10px 20px;
   font-size: 14px;
-  font-weight: bold;
 }
 
-.reset-button:hover {
-  background-color: #ff1c1c;
-}
-
-.reset-button:active {
-  background-color: #e60000;
+button.reset-button:hover {
+  background-color: #d32f2f;
 }
 
 /* Image Styling */
 img {
   margin-top: 10px;
   max-width: 100%;
-  border-radius: 5px; /* Slight rounding for aesthetic purposes */
+  border-radius: 5px;
 }
 
-/* Styling for Stored Data List */
+/* Styling for "I Understand" Checkbox and Comment */
+.warning-box {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 16px;
+  color: #555;
+}
+
+.warning-box label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.warning-box input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.5); /* Enlarge checkbox for mobile */
+}
+
+.warning-box p {
+  font-size: 14px;
+  color: #666;
+  margin: 10px 0 0;
+}
+
+/* List Styling for Stored Data */
 ul {
   list-style-type: none;
   padding: 0;
@@ -76,49 +109,54 @@ ul {
 
 li {
   text-align: left;
-  margin: 20px 0;
+  margin: 10px 0;
   padding: 10px;
   background: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 5px;
+  font-size: 16px;
 }
 
-/* Heading 1 Styling */
+/* Headings Styling */
 h1 {
-  margin: 0;
-  font-size: 24px;
+  margin: 10px 0;
+  font-size: 26px;
   color: #333;
 }
 
-/* Heading 2 Styling */
 h2 {
   margin-top: 10px;
-  font-size: 20px;
-  color: #333;
+  font-size: 22px;
+  color: #555;
 }
 
 h2:first-of-type {
   margin-top: 0;
   font-weight: bold;
-  color: #007bff; /* Blue color for emphasis */
+  color: #007bff; /* Highlight for the running total */
 }
 
-/* Next Docket Button Styling */
-.next-docket-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+/* Responsive Design for Smaller Screens */
+@media (max-width: 600px) {
+  .App {
+    padding: 15px;
+    min-height: 600px; /* Adjust height for smaller screens */
+  }
 
-.next-docket-button:hover {
-  background-color: #218838;
-}
+  button {
+    font-size: 18px;
+    width: 90%;
+  }
 
-.next-docket-button:active {
-  background-color: #1e7e34;
+  h1 {
+    font-size: 22px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .warning-box {
+    font-size: 14px;
+  }
 }
