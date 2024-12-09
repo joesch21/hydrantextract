@@ -1,62 +1,94 @@
 import React, { useState, useEffect } from "react";
 import CameraCapture from "./components/cameracapture";
 import TextExtractor from "./components/textextractor";
-import { fetchData } from "./components/dbHelper";
+import { fetchData, initDatabase } from "./components/dbHelper";
+import Dexie from "dexie"; // Import Dexie for reset functionality
 import "./App.css";
 
 const App = () => {
-  const [image, setImage] = useState(null); // State to hold the captured image
-  const [storedData, setStoredData] = useState([]); // State to hold the fetched records from Dexie
+  const [image, setImage] = useState(null);
+  const [storedData, setStoredData] = useState([]);
+  const [totalUplift, setTotalUplift] = useState(0);
 
-  /**
-   * Fetch and load stored data from the database
-   */
+  // Load stored data from Dexie
   const loadStoredData = async () => {
     try {
-      const data = await fetchData(); // Fetch data from Dexie.js
-      console.log("Fetched records:", data);
-      setStoredData(data || []); // Set the state with fetched data or an empty array if none
+      const data = await fetchData(); // Fetch data from the database
+      setStoredData(data || []);
     } catch (error) {
       console.error("Error fetching stored data:", error);
     }
   };
 
-  /**
-   * Initialize by loading stored data when the component mounts
-   */
   useEffect(() => {
+    // Initialize the database and load stored data on component mount
+    initDatabase();
     loadStoredData();
   }, []);
 
+  // Calculate the running total whenever storedData changes
+  useEffect(() => {
+    const calculateTotalUplift = () => {
+      const total = storedData.reduce((sum, record) => {
+        const upliftValue = parseFloat(record.uplift || 0); // Safely parse uplift value
+        return sum + upliftValue;
+      }, 0);
+      setTotalUplift(total);
+    };
+
+    calculateTotalUplift();
+  }, [storedData]);
+
+  // Function to reset all data in the database
+  const handleResetData = async () => {
+    try {
+      await Dexie.delete("RefuelDatabase"); // Delete the entire Dexie database
+      alert("All data has been reset!");
+      setStoredData([]); // Clear the state after reset
+      setTotalUplift(0); // Reset the running total
+    } catch (error) {
+      console.error("Error resetting database:", error);
+    }
+  };
+
+  // Function to clear the current image and allow for new uploads
+  const handleNextDocket = () => {
+    setImage(null); // Clear the current image
+  };
+
   return (
     <div className="App">
+      <button className="reset-button" onClick={handleResetData}>
+        Reset Data
+      </button>
       <h1>Docket Uploader</h1>
-      
-      {/* Camera Capture or Text Extraction */}
-      {!image ? (
-        <CameraCapture onCapture={(capturedImage) => setImage(capturedImage)} />
-      ) : (
-        <TextExtractor
-          image={image}
-          onSubmit={loadStoredData} // Refresh stored data after a new record is inserted
-        />
+
+      {/* Display the running total of Uplift */}
+      <h2>Total Uplift: {totalUplift.toFixed(2)} L</h2>
+
+      {!image && <CameraCapture onCapture={(image) => setImage(image)} />}
+      {image && (
+        <>
+          <TextExtractor
+            image={image}
+            onSubmit={loadStoredData} // Refresh data after form submission
+          />
+          <button className="next-docket-button" onClick={handleNextDocket}>
+            Next Docket
+          </button>
+        </>
       )}
-      
-      {/* Display the stored records */}
       <h2>Stored Data:</h2>
+      {/* Display the stored data */}
       <ul>
-        {storedData.length > 0 ? (
-          storedData.map((record) => (
-            <li key={record.id}>
-              <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
-              <strong>Flight:</strong> {record.flight || "N/A"} |{" "}
-              <strong>Destination:</strong> {record.destination || "N/A"} |{" "}
-              <strong>Uplift:</strong> {record.uplift || "N/A"}L
-            </li>
-          ))
-        ) : (
-          <p>No data stored yet. Submit a record to see it here!</p>
-        )}
+        {storedData.map((record) => (
+          <li key={record.id}>
+            <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
+            <strong>Flight:</strong> {record.flight || "N/A"} |{" "}
+            <strong>Destination:</strong> {record.destination || "N/A"} |{" "}
+            <strong>Uplift:</strong> {record.uplift || "N/A"}
+          </li>
+        ))}
       </ul>
     </div>
   );

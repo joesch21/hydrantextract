@@ -53,4 +53,14 @@ export const fetchData = async () => {
   }
 };
 
+// Clear all records from the `refuelData` table
+export const clearData = async () => {
+  try {
+    await db.refuelData.clear(); // Clear all records from the table
+    console.log("All data cleared successfully from the database.");
+  } catch (error) {
+    console.error("Error clearing data:", error);
+  }
+};
+
 export default db;

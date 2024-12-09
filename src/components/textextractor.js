@@ -19,6 +19,7 @@ const TextExtractor = ({ image, onSubmit }) => {
     ticket: "",
   });
 
+  // Function to extract text from the image using Tesseract
   const extractText = async () => {
     if (!image) return;
     setProcessing(true);
@@ -31,6 +32,7 @@ const TextExtractor = ({ image, onSubmit }) => {
 
       setText(text);
 
+      // Parse the extracted text into structured data
       const parsedData = parseTextToFormData(text);
       setFormData(parsedData);
     } catch (error) {
@@ -41,6 +43,7 @@ const TextExtractor = ({ image, onSubmit }) => {
     }
   };
 
+  // Parse extracted text into structured form data
   const parseTextToFormData = (extractedText) => {
     const lines = extractedText.split("\n");
 
@@ -50,7 +53,7 @@ const TextExtractor = ({ image, onSubmit }) => {
       time: extractField(lines, /Time Finish[:\s]+([\d:]+ [APMapm]+)/i),
       bay: extractField(lines, /Stand[:\s]+(.+)/i),
       registration: extractField(lines, /Reg. No[:\s]+(.+)/i),
-      uplift: extractUplift(lines),
+      uplift: extractUplift(lines), // Extract uplift with proper parsing
       dp: "",
       flow: "",
       hose: "",
@@ -59,16 +62,18 @@ const TextExtractor = ({ image, onSubmit }) => {
     };
   };
 
+  // Extract the uplift value and convert it to a number
   const extractUplift = (lines) => {
     for (const line of lines) {
       const match = line.match(/Total Uplift[:\s]+([\d,]+)\s*L/i);
       if (match) {
-        return match[1].trim();
+        return match[1].replace(/,/g, ""); // Remove commas for numerical parsing
       }
     }
-    return "";
+    return "0"; // Default to 0 if not found
   };
 
+  // Generic field extraction utility
   const extractField = (lines, regex) => {
     for (const line of lines) {
       const match = line.match(regex);
@@ -77,18 +82,20 @@ const TextExtractor = ({ image, onSubmit }) => {
     return "";
   };
 
+  // Handle changes to form fields
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Handle form submission
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Data Submitted:", formData);
 
     try {
       await insertData(formData); // Insert data into Dexie
-      onSubmit(); // Refresh the data list in the parent component
+      onSubmit(); // Refresh data in the parent component
       alert("Data submitted successfully!");
     } catch (error) {
       console.error("Error submitting form data:", error);
