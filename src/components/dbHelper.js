@@ -21,6 +21,7 @@ db.version(1).stores({
 // Ensure the database is ready
 export const initDatabase = async () => {
   try {
+    await db.open(); // Open the database connection
     console.log("Dexie.js Database initialized");
   } catch (error) {
     console.error("Failed to initialize Dexie.js Database:", error);
@@ -31,14 +32,8 @@ export const initDatabase = async () => {
 export const insertData = async (formData) => {
   try {
     await db.refuelData.add({
-      flight: formData.flight,
-      destination: formData.destination,
-      time: formData.time,
-      bay: formData.bay,
-      registration: formData.registration,
-      uplift: formData.uplift,
-      ticket: formData.ticket,
-      created_at: new Date().toISOString(), // Add timestamp
+      ...formData,
+      created_at: new Date().toISOString(), // Automatically add a timestamp
     });
     console.log("Data inserted successfully:", formData);
   } catch (error) {
@@ -46,6 +41,7 @@ export const insertData = async (formData) => {
   }
 };
 
+// Fetch all records from the `refuelData` table
 export const fetchData = async () => {
   try {
     const records = await db.refuelData.orderBy("created_at").toArray();
@@ -56,6 +52,5 @@ export const fetchData = async () => {
     return []; // Return an empty array on error
   }
 };
-
 
 export default db;
