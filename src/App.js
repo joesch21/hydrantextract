@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import CameraCapture from "./components/cameracapture";
 import TextExtractor from "./components/textextractor";
 import { fetchData, initDatabase } from "./components/dbHelper";
-import Dexie from "dexie"; // Import Dexie for reset functionality
+import Dexie from "dexie";
 import "./App.css";
 
 const App = () => {
@@ -10,10 +10,9 @@ const App = () => {
   const [storedData, setStoredData] = useState([]);
   const [totalUplift, setTotalUplift] = useState(0);
 
-  // Load stored data from Dexie
   const loadStoredData = async () => {
     try {
-      const data = await fetchData(); // Fetch data from the database
+      const data = await fetchData();
       setStoredData(data || []);
     } catch (error) {
       console.error("Error fetching stored data:", error);
@@ -21,16 +20,14 @@ const App = () => {
   };
 
   useEffect(() => {
-    // Initialize the database and load stored data on component mount
     initDatabase();
     loadStoredData();
   }, []);
 
-  // Calculate the running total whenever storedData changes
   useEffect(() => {
     const calculateTotalUplift = () => {
       const total = storedData.reduce((sum, record) => {
-        const upliftValue = parseFloat(record.uplift || 0); // Safely parse uplift value
+        const upliftValue = parseFloat(record.uplift || 0);
         return sum + upliftValue;
       }, 0);
       setTotalUplift(total);
@@ -39,21 +36,26 @@ const App = () => {
     calculateTotalUplift();
   }, [storedData]);
 
-  // Function to reset all data in the database
   const handleResetData = async () => {
-    try {
-      await Dexie.delete("RefuelDatabase"); // Delete the entire Dexie database
-      alert("All data has been reset!");
-      setStoredData([]); // Clear the state after reset
-      setTotalUplift(0); // Reset the running total
-    } catch (error) {
-      console.error("Error resetting database:", error);
+    // Display a confirmation warning
+    const confirmed = window.confirm(
+      "WARNING: This will reset all data! Are you sure you want to continue? It is recommended to reset data at the end of your shift."
+    );
+
+    if (confirmed) {
+      try {
+        await Dexie.delete("RefuelDatabase");
+        alert("All data has been reset!");
+        setStoredData([]);
+        setTotalUplift(0);
+      } catch (error) {
+        console.error("Error resetting database:", error);
+      }
     }
   };
 
-  // Function to clear the current image and allow for new uploads
   const handleNextDocket = () => {
-    setImage(null); // Clear the current image
+    setImage(null);
   };
 
   return (
@@ -62,16 +64,13 @@ const App = () => {
         Reset Data
       </button>
       <h1>Docket Uploader</h1>
-
-      {/* Display the running total of Uplift */}
       <h2>Total Uplift: {totalUplift.toFixed(2)} L</h2>
-
       {!image && <CameraCapture onCapture={(image) => setImage(image)} />}
       {image && (
         <>
           <TextExtractor
             image={image}
-            onSubmit={loadStoredData} // Refresh data after form submission
+            onSubmit={loadStoredData}
           />
           <button className="next-docket-button" onClick={handleNextDocket}>
             Next Docket
@@ -79,7 +78,6 @@ const App = () => {
         </>
       )}
       <h2>Stored Data:</h2>
-      {/* Display the stored data */}
       <ul>
         {storedData.map((record) => (
           <li key={record.id}>
