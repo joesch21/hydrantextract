@@ -73,46 +73,10 @@ const RefuelForm = ({ formData, handleFormChange, handleFormSubmit }) => {
           placeholder="Enter uplift in liters"
         />
       </div>
+     
+           
 
-      <div>
-        <label htmlFor="dp">DP</label>
-        <input
-          type="text"
-          id="dp"
-          name="dp"
-          value={formData.dp || ""}
-          onChange={handleFormChange}
-          placeholder="Enter DP"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="flow">Flow (L/min)</label>
-        <input
-          type="number"
-          id="flow"
-          name="flow"
-          value={formData.flow || ""}
-          onChange={handleFormChange}
-          placeholder="Enter flow rate"
-        />
-      </div>
-
-      
-
-      <div>
-        <label htmlFor="walkaround">360° Walk Around</label>
-        <select
-          id="walkaround"
-          name="walkaround"
-          value={formData.walkaround || "Completed"}
-          onChange={handleFormChange}
-        >
-          <option value="Completed">Completed</option>
-          <option value="Not Completed">Not Completed</option>
-        </select>
-      </div>
-
+     
       <button type="submit">Submit</button>
     </form>
   );

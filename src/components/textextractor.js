@@ -13,9 +13,6 @@ const TextExtractor = ({ image, onSubmit }) => {
     bay: "",
     registration: "",
     uplift: "",
-    dp: "",
-    flow: "",
-    walkaround: "Completed",
     ticket: "",
   });
   const [isFileLoaded, setIsFileLoaded] = useState(false); // File loaded state
@@ -54,9 +51,6 @@ const TextExtractor = ({ image, onSubmit }) => {
       bay: extractField(lines, /Stand[:\s]+(.+)/i),
       registration: extractField(lines, /Reg. No[:\s]+(.+)/i),
       uplift: extractUplift(lines),
-      dp: "",
-      flow: "",
-      walkaround: "Completed",
       ticket: extractField(lines, /Ticket No[:\s]+(.+)/i),
     };
   };

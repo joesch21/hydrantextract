@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CameraCapture from "./components/cameracapture";
 import TextExtractor from "./components/textextractor";
-import { fetchData, clearData } from "./components/dbHelper";
+import { fetchData, clearData, deleteRecord } from "./components/dbHelper"; // Add deleteRecord here
 import "./App.css";
 
 const App = () => {
@@ -49,6 +49,28 @@ const App = () => {
     }
   };
 
+  const handleDeleteRecord = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this record?"
+    );
+    if (confirmDelete) {
+      try {
+        await deleteRecord(id); // Call the delete function
+        setStoredData((prevData) => prevData.filter((record) => record.id !== id)); // Update the state
+        const updatedTotal = storedData
+          .filter((record) => record.id !== id)
+          .reduce((sum, record) => {
+            const uplift = parseFloat(record.uplift) || 0;
+            return sum + uplift;
+          }, 0);
+        setRunningTotal(updatedTotal); // Update the running total
+        alert("Record deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting record:", error);
+      }
+    }
+  };
+
   return (
     <div className="App">
       <h1>Docket Uploader</h1>
@@ -63,14 +85,14 @@ const App = () => {
         />
       )}
 
-      {/* Step 2:  */}
+      {/* Step 2: Extract Text */}
       {image && (
         <button
           className={`extract-button ${!extracted ? "flash" : ""}`}
           onClick={() => setExtracted(true)}
           disabled={extracted}
         >
-          
+          Extract Text
         </button>
       )}
 
@@ -83,9 +105,6 @@ const App = () => {
               loadStoredData();
             }}
           />
-          {/* Submit Data Button */}
-          
-
           {/* Next Flight Button */}
           <button className="next-docket-button" onClick={handleNextFlight}>
             Enter Next Flight
@@ -101,7 +120,14 @@ const App = () => {
             <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
             <strong>Flight:</strong> {record.flight || "N/A"} |{" "}
             <strong>Destination:</strong> {record.destination || "N/A"} |{" "}
-            <strong>Uplift:</strong> {record.uplift || "N/A"} L
+            <strong>Uplift:</strong> {record.uplift || "N/A"} L{" "}
+            {/* Delete Button */}
+            <button
+              className="delete-button"
+              onClick={() => handleDeleteRecord(record.id)}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
