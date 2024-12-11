@@ -120,8 +120,8 @@ export const generateThumbnail = async (imageBase64) => {
     img.onload = () => {
       try {
         // Set thumbnail dimensions
-        const thumbnailWidth = 100;
-        const thumbnailHeight = 100;
+        const thumbnailWidth = 500;
+        const thumbnailHeight = 500;
 
         canvas.width = thumbnailWidth;
         canvas.height = thumbnailHeight;

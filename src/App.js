@@ -72,8 +72,8 @@ const App = () => {
       const ctx = canvas.getContext("2d");
 
       // Set thumbnail dimensions
-      const thumbnailWidth = 100;
-      const thumbnailHeight = 100;
+      const thumbnailWidth = 500;
+      const thumbnailHeight = 500;
 
       canvas.width = thumbnailWidth;
       canvas.height = thumbnailHeight;
@@ -138,10 +138,10 @@ const App = () => {
                 src={record.thumbnail || ""}
                 alt="Thumbnail"
                 style={{
-                  width: "50px",
-                  height: "50px",
-                  marginRight: "10px",
-                  borderRadius: "5px",
+                  width: "400px",
+                  height: "400px",
+                  marginRight: "15px",
+                  borderRadius: "15px",
                 }}
               />
               <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
