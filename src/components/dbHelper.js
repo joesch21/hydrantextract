@@ -3,17 +3,18 @@ import Dexie from "dexie";
 // Initialize the database
 const db = new Dexie("RefuelDatabase");
 
-// Define the database schema
-db.version(1).stores({
+// Define the database schema with an updated version to include thumbnails
+db.version(2).stores({
   refuelData: `
     ++id,
     flight,
     destination,
-    time,
+    timeFinish,
     bay,
     registration,
     uplift,
     ticket,
+    thumbnail,
     created_at
   `,
 });
@@ -24,14 +25,13 @@ export const initDatabase = async () => {
     await db.open(); // Open the database connection
     console.log("Dexie.js Database initialized");
   } catch (error) {
-    console.error("Failed to initialize Dexie.js Database:", error);
+    console.error("Failed to initialize Dexie.js Database:", error.message || error);
   }
 };
 
 // Insert a record into the `refuelData` table
 export const insertData = async (formData) => {
   try {
-    // Validate the input data
     if (!formData || Object.keys(formData).length === 0) {
       throw new Error("Invalid data. Cannot insert empty form data.");
     }
@@ -50,7 +50,7 @@ export const insertData = async (formData) => {
 export const fetchData = async () => {
   try {
     const records = await db.refuelData.orderBy("created_at").toArray();
-    console.log("Fetched records:", records); // Debugging output
+    console.log("Fetched records:", records);
     return records; // Ensure this returns an array
   } catch (error) {
     console.error("Error fetching data:", error.message || error);
@@ -108,6 +108,40 @@ export const deleteRecord = async (id) => {
   } catch (error) {
     console.error(`Error deleting record with ID ${id}:`, error.message || error);
   }
+};
+
+// Generate a thumbnail from an image (as Base64)
+export const generateThumbnail = async (imageBase64) => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const img = new Image();
+    img.onload = () => {
+      try {
+        // Set thumbnail dimensions
+        const thumbnailWidth = 100;
+        const thumbnailHeight = 100;
+
+        canvas.width = thumbnailWidth;
+        canvas.height = thumbnailHeight;
+
+        ctx.drawImage(img, 0, 0, thumbnailWidth, thumbnailHeight);
+        const thumbnail = canvas.toDataURL("image/jpeg"); // Convert to Base64
+        resolve(thumbnail); // Return the thumbnail
+      } catch (error) {
+        console.error("Error generating thumbnail:", error);
+        reject(error);
+      }
+    };
+
+    img.onerror = (error) => {
+      console.error("Error loading image for thumbnail:", error);
+      reject(error);
+    };
+
+    img.src = imageBase64;
+  });
 };
 
 export default db;

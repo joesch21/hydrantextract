@@ -6,7 +6,7 @@ const db = new Dexie("RefuelDatabase");
 // Define the schema
 db.version(1).stores({
   refuelData:
-    "++id, ticket, flight, destination, time, bay, registration, uplift, created_at",
+    "++id, ticket, flight, destination, time finish, bay, registration, uplift, created_at",
 });
 
 // Function to insert data
