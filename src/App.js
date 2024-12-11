@@ -5,10 +5,11 @@ import { fetchData, clearData, deleteRecord } from "./components/dbHelper";
 import "./App.css";
 
 const App = () => {
-  const [image, setImage] = useState(null); // Holds the original and thumbnail
+  const [image, setImage] = useState(null);
   const [extracted, setExtracted] = useState(false);
   const [storedData, setStoredData] = useState([]);
   const [runningTotal, setRunningTotal] = useState(0);
+  const [modalImage, setModalImage] = useState(null); // For enlarged image view
 
   // Load stored data and calculate running total
   const loadStoredData = async () => {
@@ -66,29 +67,34 @@ const App = () => {
   };
 
   const handleCaptureImage = (capturedImage) => {
-    // Generate a thumbnail from the captured image
     const generateThumbnail = (image) => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      // Set thumbnail dimensions
       const thumbnailWidth = 100;
       const thumbnailHeight = 100;
 
       canvas.width = thumbnailWidth;
       canvas.height = thumbnailHeight;
 
-      // Draw the image onto the canvas
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, thumbnailWidth, thumbnailHeight);
-        const thumbnail = canvas.toDataURL("image/jpeg"); // Convert to Base64
-        setImage({ original: capturedImage, thumbnail }); // Save both original and thumbnail
+        const thumbnail = canvas.toDataURL("image/jpeg");
+        setImage({ original: capturedImage, thumbnail });
       };
       img.src = image;
     };
 
     generateThumbnail(capturedImage);
+  };
+
+  const openModal = (image) => {
+    setModalImage(image); // Set the clicked image for modal view
+  };
+
+  const closeModal = () => {
+    setModalImage(null); // Close the modal by resetting the state
   };
 
   return (
@@ -119,8 +125,7 @@ const App = () => {
         <>
           <TextExtractor
             image={image.original}
-            thumbnail={image.thumbnail} // Pass thumbnail to TextExtractor
-            onSubmit={loadStoredData} // Ensure time field is stored
+            onSubmit={loadStoredData}
           />
           <button className="next-docket-button" onClick={handleNextFlight}>
             Next Flight
@@ -142,7 +147,9 @@ const App = () => {
                   height: "50px",
                   marginRight: "10px",
                   borderRadius: "5px",
+                  cursor: "pointer",
                 }}
+                onClick={() => openModal(record.thumbnail || "")} // Open modal on click
               />
               <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
               <strong>Flight:</strong> {record.flight || "N/A"} |{" "}
@@ -166,6 +173,19 @@ const App = () => {
       <button className="reset-button" onClick={handleResetData}>
         Reset Data
       </button>
+
+      {/* Modal for Enlarged Image */}
+      {modalImage && (
+        <div className="modal" onClick={closeModal}>
+          <div className="modal-content">
+            <img
+              src={modalImage}
+              alt="Enlarged View"
+              style={{ maxWidth: "100%", maxHeight: "100%" }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
