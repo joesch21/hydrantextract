@@ -70,8 +70,8 @@ const App = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      const thumbnailWidth = 100;
-      const thumbnailHeight = 100;
+      const thumbnailWidth = 250;
+      const thumbnailHeight = 250;
 
       canvas.width = thumbnailWidth;
       canvas.height = thumbnailHeight;
