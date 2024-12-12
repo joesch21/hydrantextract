@@ -66,29 +66,51 @@ const App = () => {
   };
 
   const handleCaptureImage = (capturedImage) => {
-    // Generate a thumbnail from the captured image
     const generateThumbnail = (image) => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      // Set thumbnail dimensions
-      const thumbnailWidth = 500;
-      const thumbnailHeight = 500;
+      const thumbnailWidth = 100;
+      const thumbnailHeight = 100;
 
       canvas.width = thumbnailWidth;
       canvas.height = thumbnailHeight;
 
-      // Draw the image onto the canvas
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, thumbnailWidth, thumbnailHeight);
-        const thumbnail = canvas.toDataURL("image/jpeg"); // Convert to Base64
-        setImage({ original: capturedImage, thumbnail }); // Save both original and thumbnail
+        const thumbnail = canvas.toDataURL("image/jpeg");
+        setImage({ original: capturedImage, thumbnail });
       };
       img.src = image;
     };
 
     generateThumbnail(capturedImage);
+  };
+
+  // Function to send email using mailto:
+  const sendEmailLocally = () => {
+    if (storedData.length === 0) {
+      alert("No data to send.");
+      return;
+    }
+
+    // Convert stored data to a CSV-like string
+    const csvData = storedData
+      .map(
+        (record) =>
+          `Ticket: ${record.ticket}, Flight: ${record.flight}, Destination: ${record.destination}, Uplift: ${record.uplift} L, Time Finish: ${record.timeFinish}`
+      )
+      .join("\n");
+
+    const recipient = "recipient@example.com";
+    const subject = encodeURIComponent("Refuel Data Report");
+    const body = encodeURIComponent(
+      `Hello,\n\nHere is the refuel data:\n\n${csvData}\n\nBest regards.`
+    );
+
+    // Open the default mail client
+    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -119,8 +141,8 @@ const App = () => {
         <>
           <TextExtractor
             image={image.original}
-            thumbnail={image.thumbnail} // Pass thumbnail to TextExtractor
-            onSubmit={loadStoredData} // Ensure time field is stored
+            thumbnail={image.thumbnail}
+            onSubmit={loadStoredData}
           />
           <button className="next-docket-button" onClick={handleNextFlight}>
             Next Flight
@@ -138,10 +160,10 @@ const App = () => {
                 src={record.thumbnail || ""}
                 alt="Thumbnail"
                 style={{
-                  width: "400px",
-                  height: "400px",
-                  marginRight: "15px",
-                  borderRadius: "15px",
+                  width: "50px",
+                  height: "50px",
+                  marginRight: "10px",
+                  borderRadius: "5px",
                 }}
               />
               <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
@@ -162,10 +184,15 @@ const App = () => {
         <p>No data available.</p>
       )}
 
-      {/* Reset Data Button */}
-      <button className="reset-button" onClick={handleResetData}>
-        Reset Data
-      </button>
+      {/* Buttons */}
+      <div className="button-container">
+        <button className="reset-button" onClick={handleResetData}>
+          Reset Data
+        </button>
+        <button className="email-button" onClick={sendEmailLocally}>
+          Send Data via Email
+        </button>
+      </div>
     </div>
   );
 };
