@@ -160,8 +160,8 @@ const App = () => {
                 src={record.thumbnail || ""}
                 alt="Thumbnail"
                 style={{
-                  width: "50px",
-                  height: "50px",
+                  width: "250px",
+                  height: "250px",
                   marginRight: "10px",
                   borderRadius: "5px",
                 }}
