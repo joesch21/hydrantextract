@@ -9,6 +9,7 @@ const App = () => {
   const [extracted, setExtracted] = useState(false);
   const [storedData, setStoredData] = useState([]);
   const [runningTotal, setRunningTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   // Load stored data and calculate running total
   const loadStoredData = async () => {
@@ -24,6 +25,8 @@ const App = () => {
       console.error("Error fetching stored data:", error);
       setStoredData([]);
       setRunningTotal(0);
+    } finally {
+      setIsLoading(false); // Set loading to false after fetching
     }
   };
 
@@ -88,14 +91,12 @@ const App = () => {
     generateThumbnail(capturedImage);
   };
 
-  // Function to send email using mailto:
   const sendEmailLocally = () => {
     if (storedData.length === 0) {
       alert("No data to send.");
       return;
     }
 
-    // Convert stored data to a CSV-like string
     const csvData = storedData
       .map(
         (record) =>
@@ -109,90 +110,93 @@ const App = () => {
       `Hello,\n\nHere is the refuel data:\n\n${csvData}\n\nBest regards.`
     );
 
-    // Open the default mail client
     window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
   };
 
   return (
     <div className="App">
-      <h1>Docket Uploader</h1>
-      <h2>Running Total: {runningTotal.toFixed(2)} L</h2>
-
-      {/* Step 1: Capture Image */}
-      {!image && (
-        <CameraCapture
-          onCapture={(capturedImage) => handleCaptureImage(capturedImage)}
-        />
-      )}
-
-      {/* Step 2: Extract Text */}
-      {image && (
-        <button
-          className={`extract-button ${!extracted ? "flash" : ""}`}
-          onClick={() => setExtracted(true)}
-          disabled={extracted}
-        >
-          Extract Text
-        </button>
-      )}
-
-      {/* Step 3: Display Extracted Text */}
-      {image && extracted && (
+      {isLoading ? (
+        <div className="loading">
+          <div className="spinner"></div>
+          <h2>Loading, please wait...</h2>
+        </div>
+      ) : (
         <>
-          <TextExtractor
-            image={image.original}
-            thumbnail={image.thumbnail}
-            onSubmit={loadStoredData}
-          />
-          <button className="next-docket-button" onClick={handleNextFlight}>
-            Next Flight
-          </button>
+          <h1>Docket Uploader</h1>
+          <h2>Running Total: {runningTotal.toFixed(2)} L</h2>
+
+          {!image && (
+            <CameraCapture
+              onCapture={(capturedImage) => handleCaptureImage(capturedImage)}
+            />
+          )}
+
+          {image && (
+            <button
+              className={`extract-button ${!extracted ? "flash" : ""}`}
+              onClick={() => setExtracted(true)}
+              disabled={extracted}
+            >
+              Extract Text
+            </button>
+          )}
+
+          {image && extracted && (
+            <>
+              <TextExtractor
+                image={image.original}
+                thumbnail={image.thumbnail}
+                onSubmit={loadStoredData}
+              />
+              <button className="next-docket-button" onClick={handleNextFlight}>
+                Next Flight
+              </button>
+            </>
+          )}
+
+          <h2>Stored Data:</h2>
+          {storedData.length > 0 ? (
+            <ul>
+              {storedData.map((record) => (
+                <li key={record.id}>
+                  <img
+                    src={record.thumbnail || ""}
+                    alt="Thumbnail"
+                    style={{
+                      width: "250px",
+                      height: "250px",
+                      marginRight: "10px",
+                      borderRadius: "5px",
+                    }}
+                  />
+                  <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
+                  <strong>Flight:</strong> {record.flight || "N/A"} |{" "}
+                  <strong>Destination:</strong> {record.destination || "N/A"} |{" "}
+                  <strong>Uplift:</strong> {record.uplift || "N/A"} L |{" "}
+                  <strong>Time:</strong> {record.timeFinish || "N/A"}{" "}
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDeleteRecord(record.id)}
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No data available.</p>
+          )}
+
+          <div className="button-container">
+            <button className="reset-button" onClick={handleResetData}>
+              Reset Data
+            </button>
+            <button className="email-button" onClick={sendEmailLocally}>
+              Send Data via Email
+            </button>
+          </div>
         </>
       )}
-
-      {/* Stored Data Display */}
-      <h2>Stored Data:</h2>
-      {storedData.length > 0 ? (
-        <ul>
-          {storedData.map((record) => (
-            <li key={record.id}>
-              <img
-                src={record.thumbnail || ""}
-                alt="Thumbnail"
-                style={{
-                  width: "250px",
-                  height: "250px",
-                  marginRight: "10px",
-                  borderRadius: "5px",
-                }}
-              />
-              <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
-              <strong>Flight:</strong> {record.flight || "N/A"} |{" "}
-              <strong>Destination:</strong> {record.destination || "N/A"} |{" "}
-              <strong>Uplift:</strong> {record.uplift || "N/A"} L |{" "}
-              <strong>Time:</strong> {record.timeFinish || "N/A"}{" "}
-              <button
-                className="delete-button"
-                onClick={() => handleDeleteRecord(record.id)}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No data available.</p>
-      )}
-
-      {/* Buttons */}
-      <div className="button-container">
-        <button className="reset-button" onClick={handleResetData}>
-          Reset Data
-        </button>
-        <button className="email-button" onClick={sendEmailLocally}>
-          Send Data via Email
-        </button>
-      </div>
     </div>
   );
 };
