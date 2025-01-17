@@ -5,13 +5,15 @@ import { fetchData, clearData, deleteRecord } from "./components/dbHelper";
 import "./App.css";
 
 const App = () => {
-  const [image, setImage] = useState(null); // Holds the original and thumbnail
+  const [image, setImage] = useState(null);
   const [extracted, setExtracted] = useState(false);
   const [storedData, setStoredData] = useState([]);
   const [runningTotal, setRunningTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isLoading, setIsLoading] = useState(true);
+  const [modalImage, setModalImage] = useState(null); // Modal state
+  const [showTable, setShowTable] = useState(false); // Toggle table visibility
 
-  // Load stored data and calculate running total
+  // Load stored data and calculate the running total
   const loadStoredData = async () => {
     try {
       const data = await fetchData();
@@ -26,7 +28,7 @@ const App = () => {
       setStoredData([]);
       setRunningTotal(0);
     } finally {
-      setIsLoading(false); // Set loading to false after fetching
+      setIsLoading(false);
     }
   };
 
@@ -73,8 +75,8 @@ const App = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      const thumbnailWidth = 250;
-      const thumbnailHeight = 250;
+      const thumbnailWidth = 300;
+      const thumbnailHeight = 300;
 
       canvas.width = thumbnailWidth;
       canvas.height = thumbnailHeight;
@@ -111,6 +113,14 @@ const App = () => {
     );
 
     window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+  };
+
+  const openModal = (imageSrc) => {
+    setModalImage(imageSrc);
+  };
+
+  const closeModal = () => {
+    setModalImage(null);
   };
 
   return (
@@ -154,37 +164,98 @@ const App = () => {
             </>
           )}
 
-          <h2>Stored Data:</h2>
-          {storedData.length > 0 ? (
-            <ul>
-              {storedData.map((record) => (
-                <li key={record.id}>
-                  <img
-                    src={record.thumbnail || ""}
-                    alt="Thumbnail"
-                    style={{
-                      width: "250px",
-                      height: "250px",
-                      marginRight: "10px",
-                      borderRadius: "5px",
-                    }}
-                  />
-                  <strong>Ticket:</strong> {record.ticket || "N/A"} |{" "}
-                  <strong>Flight:</strong> {record.flight || "N/A"} |{" "}
-                  <strong>Destination:</strong> {record.destination || "N/A"} |{" "}
-                  <strong>Uplift:</strong> {record.uplift || "N/A"} L |{" "}
-                  <strong>Time:</strong> {record.timeFinish || "N/A"}{" "}
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDeleteRecord(record.id)}
-                  >
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No data available.</p>
+          <button
+            className="toggle-button"
+            onClick={() => setShowTable(!showTable)}
+          >
+            {showTable ? "Hide Stored Data" : "Show Stored Data"}
+          </button>
+
+          <div className={`stored-data-container ${showTable ? "open" : "closed"}`}>
+  {storedData.length > 0 ? (
+    <table>
+      <thead>
+        <tr>
+          <th>Ticket</th>
+          <th>Flight</th>
+          <th>Destination</th>
+          <th>Time Finish</th>
+          <th>Bay</th>
+          <th>Registration</th>
+          <th>Uplift (L)</th>
+          <th>Airline</th>
+          <th>Airport</th>
+          <th>Aircraft Type</th>
+          <th>Vehicle</th>
+          <th>Meter Start</th>
+          <th>Meter Stop</th>
+          <th>Pit</th>
+          <th>Date</th>
+          <th>Start Figure</th>
+          <th>DP</th>
+          <th>Flow</th>
+          <th>Operator</th>
+          <th>Thumbnail</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {storedData.map((record) => (
+          <tr key={record.id}>
+            <td>{record.ticket}</td>
+            <td>{record.flight}</td>
+            <td>{record.destination}</td>
+            <td>{record.timeFinish}</td>
+            <td>{record.bay}</td>
+            <td>{record.registration}</td>
+            <td>{record.uplift}</td>
+            <td>{record.airline}</td>
+            <td>{record.airport}</td>
+            <td>{record.aircraftType}</td>
+            <td>{record.vehicle}</td>
+            <td>{record.meterStart}</td>
+            <td>{record.meterStop}</td>
+            <td>{record.pit}</td>
+            <td>{record.date}</td>
+            <td>{record.startFigure}</td>
+            <td>{record.dp}</td>
+            <td>{record.flow}</td>
+            <td>{record.operator}</td>
+            <td>
+              <img
+                src={record.thumbnail || ""}
+                alt="Thumbnail"
+                style={{ width: "50px", height: "50px", cursor: "pointer" }}
+                onClick={() => openModal(record.thumbnail || "")}
+              />
+            </td>
+            <td>
+              <button
+                className="delete-button"
+                onClick={() => handleDeleteRecord(record.id)}
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <p>No data available.</p>
+  )}
+</div>
+
+
+          {modalImage && (
+            <div className="modal">
+              <div className="modal-content">
+                <span className="close-button" onClick={closeModal}>
+                  &times;
+                </span>
+                <img src={modalImage} alt="Full size" className="modal-image" />
+              </div>
+            </div>
           )}
 
           <div className="button-container">

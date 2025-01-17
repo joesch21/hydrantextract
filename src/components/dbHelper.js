@@ -1,20 +1,32 @@
 import Dexie from "dexie";
 
-// Initialize the database
+// Initialize the Dexie database
 const db = new Dexie("RefuelDatabase");
 
-// Define the database schema with an updated version to include thumbnails
-db.version(2).stores({
+// Define the latest database schema
+db.version(1).stores({
   refuelData: `
     ++id,
+    ticket,
     flight,
     destination,
     timeFinish,
     bay,
     registration,
     uplift,
-    ticket,
-    thumbnail,
+    ticketNumber,
+    airline,
+    aircraftType,
+    vehicle,
+    meterStart,
+    meterStop,
+    pit,
+    date,
+    startFigure,
+    dp,
+    flow,
+    operator,
+    airport,
     created_at
   `,
 });
@@ -36,6 +48,13 @@ export const insertData = async (formData) => {
       throw new Error("Invalid data. Cannot insert empty form data.");
     }
 
+    // Validate required fields
+    const requiredFields = ["ticket", "flight", "destination", "timeFinish"];
+    const missingFields = requiredFields.filter((field) => !formData[field]);
+    if (missingFields.length > 0) {
+      throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
+    }
+
     await db.refuelData.add({
       ...formData,
       created_at: new Date().toISOString(), // Automatically add a timestamp
@@ -51,10 +70,10 @@ export const fetchData = async () => {
   try {
     const records = await db.refuelData.orderBy("created_at").toArray();
     console.log("Fetched records:", records);
-    return records; // Ensure this returns an array
+    return records;
   } catch (error) {
     console.error("Error fetching data:", error.message || error);
-    return []; // Return an empty array on error
+    return [];
   }
 };
 
@@ -111,7 +130,7 @@ export const deleteRecord = async (id) => {
 };
 
 // Generate a thumbnail from an image (as Base64)
-export const generateThumbnail = async (imageBase64) => {
+export const generateThumbnail = async (imageBase64, width = 500, height = 500) => {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -119,14 +138,9 @@ export const generateThumbnail = async (imageBase64) => {
     const img = new Image();
     img.onload = () => {
       try {
-        // Set thumbnail dimensions
-        const thumbnailWidth = 500;
-        const thumbnailHeight = 500;
-
-        canvas.width = thumbnailWidth;
-        canvas.height = thumbnailHeight;
-
-        ctx.drawImage(img, 0, 0, thumbnailWidth, thumbnailHeight);
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
         const thumbnail = canvas.toDataURL("image/jpeg"); // Convert to Base64
         resolve(thumbnail); // Return the thumbnail
       } catch (error) {
@@ -142,6 +156,12 @@ export const generateThumbnail = async (imageBase64) => {
 
     img.src = imageBase64;
   });
+};
+
+// Utility: Log all stored data to the console
+export const logAllData = async () => {
+  const records = await fetchData();
+  console.table(records); // Log data in table format for readability
 };
 
 export default db;

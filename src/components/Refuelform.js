@@ -1,84 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 
 const RefuelForm = ({ formData, handleFormChange, handleFormSubmit }) => {
+  const [isManualEntry, setIsManualEntry] = useState(false);
+
+  const toggleManualEntry = () => {
+    setIsManualEntry((prev) => !prev);
+  };
+
   return (
-    <form onSubmit={handleFormSubmit}>
-      <div>
-        <label htmlFor="flight">Flight Number</label>
-        <input
-          type="text"
-          id="flight"
-          name="flight"
-          value={formData.flight || ""}
-          onChange={handleFormChange}
-          placeholder="Enter flight number"
-        />
-      </div>
+    <div>
+      <button type="button" onClick={toggleManualEntry} className="toggle-button">
+        {isManualEntry ? "Switch to Extracted Data" : "Switch to Manual Entry"}
+      </button>
 
-      <div>
-        <label htmlFor="destination">Destination</label>
-        <input
-          type="text"
-          id="destination"
-          name="destination"
-          value={formData.destination || ""}
-          onChange={handleFormChange}
-          placeholder="Enter destination"
-        />
-      </div>
+      <form onSubmit={handleFormSubmit}>
+        {[
+          { label: "Flight Number", name: "flight", placeholder: "Enter flight number" },
+          { label: "Destination", name: "destination", placeholder: "Enter destination" },
+          { label: "Time Finish", name: "timeFinish", type: "time" },
+          { label: "Bay", name: "bay", placeholder: "Enter bay" },
+          { label: "Registration Number", name: "registration", placeholder: "Enter registration number" },
+          { label: "Uplift (L)", name: "uplift", placeholder: "Enter uplift in liters", type: "number" },
+          { label: "Ticket Number", name: "ticket", placeholder: "Enter ticket number" },
+          { label: "Airline", name: "airline", placeholder: "Enter airline" },
+          { label: "Aircraft Type", name: "aircraftType", placeholder: "Enter aircraft type" },
+          { label: "Vehicle", name: "vehicle", placeholder: "Enter vehicle" },
+          { label: "Meter Start", name: "meterStart", placeholder: "Enter meter start", type: "number" },
+          { label: "Meter Stop", name: "meterStop", placeholder: "Enter meter stop", type: "number" },
+          { label: "Pit", name: "pit", placeholder: "Enter pit" },
+          { label: "Date", name: "date", placeholder: "Enter date", type: "date" },
+          // New Fields
+          { label: "Start Figure", name: "startFigure", placeholder: "Enter start figure", type: "number" },
+          { label: "DP", name: "dp", placeholder: "Enter DP value", type: "number" },
+          { label: "Flow", name: "flow", placeholder: "Enter flow value", type: "number" },
+        ].map(({ label, name, placeholder, type = "text" }) => (
+          <div key={name}>
+            <label htmlFor={name}>{label}</label>
+            <input
+              type={type}
+              id={name}
+              name={name}
+              value={formData[name] || ""}
+              onChange={handleFormChange}
+              placeholder={placeholder}
+              disabled={!isManualEntry} // Disable manual input if not in manual mode
+            />
+          </div>
+        ))}
 
-      <div>
-        <label htmlFor="time">Time</label>
-        <input
-          type="time"
-          id="time"
-          name="time"
-          value={formData.time || ""}
-          onChange={handleFormChange}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="bay">Bay</label>
-        <input
-          type="text"
-          id="bay"
-          name="bay"
-          value={formData.bay || ""}
-          onChange={handleFormChange}
-          placeholder="Enter bay"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="registration">Registration Number</label>
-        <input
-          type="text"
-          id="registration"
-          name="registration"
-          value={formData.registration || ""}
-          onChange={handleFormChange}
-          placeholder="Enter registration number"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="uplift">Uplift (L)</label>
-        <input
-          type="number"
-          id="uplift"
-          name="uplift"
-          value={formData.uplift || ""}
-          onChange={handleFormChange}
-          placeholder="Enter uplift in liters"
-        />
-      </div>
-     
-           
-
-     
-      <button type="submit">Submit</button>
-    </form>
+        <button type="submit" disabled={!isManualEntry && !Object.values(formData).some((v) => v)}>
+          Submit
+        </button>
+      </form>
+    </div>
   );
 };
 

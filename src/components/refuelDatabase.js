@@ -18,6 +18,7 @@ export const insertData = async (formData) => {
   console.log("Data inserted successfully");
 };
 
+
 // Function to fetch all data
 export const fetchData = async () => {
   return await db.refuelData.orderBy("created_at").toArray();

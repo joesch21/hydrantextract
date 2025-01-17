@@ -7,7 +7,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "browserify-fs": "^1.0.0",
-    "dexie": "^4.0.10",
+    "dexie": "^4.0.11",
     "path-browserify": "^1.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -21,7 +21,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "serve": "serve -s build",  
+    "serve": "serve -s build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "react-app-rewired": "^2.2.1"
   }
 }

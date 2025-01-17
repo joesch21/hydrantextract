@@ -22,27 +22,28 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 700px;
-  position: relative; /* For positioning elements inside */
-  min-height: 450px; /* Ensure enough height for all elements */
-  margin: 20px 0; /* Add spacing around the App container */
+  position: relative;
+  min-height: 450px;
+  margin: 20px 0;
   box-sizing: border-box;
 }
 
 /* General Button Styling */
 button {
-  padding: 15px 25px;
-  font-size: 18px;
+  padding: 12px 20px;
+  font-size: 16px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  width: 80%;
+  width: 90%;
   max-width: 400px;
   margin: 10px 0;
+  transition: background-color 0.3s ease;
 }
 
 /* Extract Button (Green) */
 button.extract-button {
-  background-color: #4caf50; /* Green */
+  background-color: #4caf50;
   color: white;
 }
 
@@ -57,12 +58,12 @@ button.extract-button:disabled {
 
 /* Submit Button (Blue) */
 button.submit-data {
-  
-  color: rgb(46, 57, 104);
+  background-color: #1976d2;
+  color: white;
 }
 
 button.submit-data:hover {
-  background-color: #1976d2;
+  background-color: #005bb5;
 }
 
 button.submit-data:disabled {
@@ -97,18 +98,6 @@ button.reset-button:hover {
   background-color: #d32f2f;
 }
 
-/* Flashing Animation */
-@keyframes flash {
-  0%, 100% {
-    background-color: #f8d210; /* Bright yellow */
-    color: black;
-  }
-  50% {
-    background-color: #f1c40f; /* Slightly darker yellow */
-    color: black;
-  }
-}
-
 /* File Input Button (Flashing Initially) */
 button.file-input {
   animation: flash 1.5s infinite;
@@ -117,35 +106,53 @@ button.file-input {
   border: 2px solid #333;
 }
 
-/* Image Styling */
-img {
-  margin-top: 10px;
-  max-width: 100%;
-  border-radius: 5px;
+/* Flashing Animation */
+@keyframes flash {
+  0%, 100% {
+    background-color: #f8d210;
+    color: black;
+  }
+  50% {
+    background-color: #f1c40f;
+    color: black;
+  }
 }
 
-/* Warning Box Styling */
-.warning-box {
-  margin: 20px 0;
-  text-align: center;
-  font-size: 16px;
-  color: #555;
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
 }
 
-.warning-box label {
-  display: block;
-  margin-bottom: 10px;
-}
-
-.warning-box input[type="checkbox"] {
-  margin-right: 10px;
-  transform: scale(1.5); /* Enlarge checkbox for mobile */
-}
-
-.warning-box p {
+thead th {
+  background-color: #f4f4f4;
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #ddd;
   font-size: 14px;
-  color: #666;
-  margin: 10px 0 0;
+}
+
+tbody td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 14px;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+table img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
 }
 
 /* List Styling for Stored Data */
@@ -164,61 +171,82 @@ li {
   font-size: 16px;
 }
 
+/* Image Styling */
+img {
+  margin-top: 10px;
+  max-width: 100%;
+  border-radius: 5px;
+}
+
 /* Headings Styling */
 h1 {
   margin: 10px 0;
-  font-size: 26px;
+  font-size: 24px;
   color: #333;
 }
 
 h2 {
   margin-top: 10px;
-  font-size: 22px;
+  font-size: 20px;
   color: #555;
 }
 
 h2:first-of-type {
   margin-top: 0;
   font-weight: bold;
-  color: #007bff; /* Highlight for the running total */
+  color: #007bff;
 }
 
 /* Responsive Design for Smaller Screens */
 @media (max-width: 600px) {
   .App {
     padding: 15px;
-    min-height: 600px; /* Adjust height for smaller screens */
+    min-height: 600px;
+  }
+
+  table {
+    font-size: 12px; /* Smaller font size for tables */
+  }
+
+  thead th,
+  tbody td {
+    padding: 6px; /* Reduce padding for smaller screens */
   }
 
   button {
-    font-size: 16px;
-    width: 90%;
+    font-size: 14px;
+    padding: 10px 15px;
   }
 
   h1 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   h2 {
-    font-size: 18px;
+    font-size: 16px;
   }
 
-  .warning-box {
-    font-size: 14px;
+  .reset-button {
+    font-size: 12px;
+    padding: 8px 15px;
+  }
+
+  img {
+    max-width: 80%; /* Adjust image size for smaller screens */
   }
 }
 
+/* Loading Spinner */
 .loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Full viewport height */
-  background-color: #f9f9f9; /* Optional: Light background for loading */
+  height: 100vh;
 }
 
 .spinner {
-  border: 8px solid #f3f3f3; /* Light grey border */
-  border-top: 8px solid #3498db; /* Blue spinner */
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -232,4 +260,144 @@ h2:first-of-type {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Modal Styling */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 95%;
+  max-height: 95%;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-image {
+  width: 100%; /* Take the full width of the modal */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 90vh; /* Ensure it doesn't overflow vertically */
+  border-radius: 10px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  padding: 0 8px;
+}
+
+.close-button:hover {
+  background: #f0f0f0;
+}
+/* Toggle Button */
+.toggle-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px 0;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.toggle-button:hover {
+  background-color: #45a049;
+}
+
+/* Styling for the Stored Data Container */
+.stored-data-container {
+  max-height: 300px; /* Limit the height */
+  overflow-y: auto; /* Add vertical scrolling */
+  border: 1px solid #ccc; /* Optional: Border for the container */
+  margin-top: 20px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #fff; /* Ensure it's visually distinct */
+}
+
+/* Open and Closed Transitions for the Container */
+.stored-data-container.closed {
+  display: none;
+}
+
+.stored-data-container.open {
+  display: block;
+}
+
+/* Adjust Table Width */
+.stored-data-container table {
+  width: 100%; /* Ensure the table fits inside the container */
+  border-collapse: collapse; /* Remove extra spacing between table cells */
+}
+
+.stored-data-container th, .stored-data-container td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.stored-data-container th {
+  background-color: #f8f8f8;
+}
+
+/* Modal for Enlarged Image */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.modal-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
