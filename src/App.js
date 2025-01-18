@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import CameraCapture from "./components/cameracapture";
 import TextExtractor from "./components/textextractor";
 import { fetchData, clearData, deleteRecord } from "./components/dbHelper";
+import EmailSender from "./components/emailsender";
+
 import "./App.css";
 
 const App = () => {
@@ -10,10 +12,9 @@ const App = () => {
   const [storedData, setStoredData] = useState([]);
   const [runningTotal, setRunningTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [modalImage, setModalImage] = useState(null); // Modal state
-  const [showTable, setShowTable] = useState(false); // Toggle table visibility
+  const [modalImage, setModalImage] = useState(null);
+  const [showTable, setShowTable] = useState(false);
 
-  // Load stored data and calculate the running total
   const loadStoredData = async () => {
     try {
       const data = await fetchData();
@@ -99,17 +100,20 @@ const App = () => {
       return;
     }
 
-    const csvData = storedData
-      .map(
-        (record) =>
-          `Ticket: ${record.ticket}, Flight: ${record.flight}, Destination: ${record.destination}, Uplift: ${record.uplift} L, Time Finish: ${record.timeFinish}`
-      )
-      .join("\n");
+    const emailBody = storedData
+      .map((record, index) => {
+        const fields = Object.entries(record)
+          .filter(([key]) => key !== "thumbnail")
+          .map(([key, value]) => `${key}: ${value || "N/A"}`)
+          .join("\n");
+        return `Record ${index + 1}:\n${fields}`;
+      })
+      .join("\n\n---\n\n");
 
     const recipient = "recipient@example.com";
     const subject = encodeURIComponent("Refuel Data Report");
     const body = encodeURIComponent(
-      `Hello,\n\nHere is the refuel data:\n\n${csvData}\n\nBest regards.`
+      `Hello,\n\nHere is the refuel data:\n\n${emailBody}\n\nBest regards.`
     );
 
     window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
@@ -172,80 +176,79 @@ const App = () => {
           </button>
 
           <div className={`stored-data-container ${showTable ? "open" : "closed"}`}>
-  {storedData.length > 0 ? (
-    <table>
-      <thead>
-        <tr>
-          <th>Ticket</th>
-          <th>Flight</th>
-          <th>Destination</th>
-          <th>Time Finish</th>
-          <th>Bay</th>
-          <th>Registration</th>
-          <th>Uplift (L)</th>
-          <th>Airline</th>
-          <th>Airport</th>
-          <th>Aircraft Type</th>
-          <th>Vehicle</th>
-          <th>Meter Start</th>
-          <th>Meter Stop</th>
-          <th>Pit</th>
-          <th>Date</th>
-          <th>Start Figure</th>
-          <th>DP</th>
-          <th>Flow</th>
-          <th>Operator</th>
-          <th>Thumbnail</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {storedData.map((record) => (
-          <tr key={record.id}>
-            <td>{record.ticket}</td>
-            <td>{record.flight}</td>
-            <td>{record.destination}</td>
-            <td>{record.timeFinish}</td>
-            <td>{record.bay}</td>
-            <td>{record.registration}</td>
-            <td>{record.uplift}</td>
-            <td>{record.airline}</td>
-            <td>{record.airport}</td>
-            <td>{record.aircraftType}</td>
-            <td>{record.vehicle}</td>
-            <td>{record.meterStart}</td>
-            <td>{record.meterStop}</td>
-            <td>{record.pit}</td>
-            <td>{record.date}</td>
-            <td>{record.startFigure}</td>
-            <td>{record.dp}</td>
-            <td>{record.flow}</td>
-            <td>{record.operator}</td>
-            <td>
-              <img
-                src={record.thumbnail || ""}
-                alt="Thumbnail"
-                style={{ width: "50px", height: "50px", cursor: "pointer" }}
-                onClick={() => openModal(record.thumbnail || "")}
-              />
-            </td>
-            <td>
-              <button
-                className="delete-button"
-                onClick={() => handleDeleteRecord(record.id)}
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  ) : (
-    <p>No data available.</p>
-  )}
-</div>
-
+            {storedData.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ticket</th>
+                    <th>Flight</th>
+                    <th>Destination</th>
+                    <th>Time Finish</th>
+                    <th>Bay</th>
+                    <th>Registration</th>
+                    <th>Uplift (L)</th>
+                    <th>Airline</th>
+                    <th>Airport</th>
+                    <th>Aircraft Type</th>
+                    <th>Vehicle</th>
+                    <th>Meter Start</th>
+                    <th>Meter Stop</th>
+                    <th>Pit</th>
+                    <th>Date</th>
+                    <th>Start Figure</th>
+                    <th>DP</th>
+                    <th>Flow</th>
+                    <th>Operator</th>
+                    <th>Thumbnail</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {storedData.map((record) => (
+                    <tr key={record.id}>
+                      <td>{record.ticket}</td>
+                      <td>{record.flight}</td>
+                      <td>{record.destination}</td>
+                      <td>{record.timeFinish}</td>
+                      <td>{record.bay}</td>
+                      <td>{record.registration}</td>
+                      <td>{record.uplift}</td>
+                      <td>{record.airline}</td>
+                      <td>{record.airport}</td>
+                      <td>{record.aircraftType}</td>
+                      <td>{record.vehicle}</td>
+                      <td>{record.meterStart}</td>
+                      <td>{record.meterStop}</td>
+                      <td>{record.pit}</td>
+                      <td>{record.date}</td>
+                      <td>{record.startFigure}</td>
+                      <td>{record.dp}</td>
+                      <td>{record.flow}</td>
+                      <td>{record.operator}</td>
+                      <td>
+                        <img
+                          src={record.thumbnail || ""}
+                          alt="Thumbnail"
+                          style={{ width: "50px", height: "50px", cursor: "pointer" }}
+                          onClick={() => openModal(record.thumbnail || "")}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="delete-button"
+                          onClick={() => handleDeleteRecord(record.id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No data available.</p>
+            )}
+          </div>
 
           {modalImage && (
             <div className="modal">
@@ -262,8 +265,9 @@ const App = () => {
             <button className="reset-button" onClick={handleResetData}>
               Reset Data
             </button>
+            <EmailSender storedData={storedData} />
             <button className="email-button" onClick={sendEmailLocally}>
-              Send Data via Email
+              Send Data via Email (Local)
             </button>
           </div>
         </>

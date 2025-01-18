@@ -401,3 +401,16 @@ h2:first-of-type {
   border: none;
   cursor: pointer;
 }
+.email-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.email-button:hover {
+  background-color: #45a049;
+}
