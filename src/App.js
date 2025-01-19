@@ -7,14 +7,15 @@ import EmailSender from "./components/emailsender";
 import "./App.css";
 
 const App = () => {
-  const [image, setImage] = useState(null);
-  const [extracted, setExtracted] = useState(false);
-  const [storedData, setStoredData] = useState([]);
-  const [runningTotal, setRunningTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [modalImage, setModalImage] = useState(null);
-  const [showTable, setShowTable] = useState(false);
+  const [image, setImage] = useState(null); // For camera-captured or uploaded image
+  const [extracted, setExtracted] = useState(false); // Text extraction status
+  const [storedData, setStoredData] = useState([]); // Data from database
+  const [runningTotal, setRunningTotal] = useState(0); // Total uplift
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [modalImage, setModalImage] = useState(null); // Modal for image preview
+  const [showTable, setShowTable] = useState(false); // Toggle stored data table
 
+  // Load stored data from database
   const loadStoredData = async () => {
     try {
       const data = await fetchData();
@@ -33,15 +34,18 @@ const App = () => {
     }
   };
 
+  // Effect to fetch data on mount
   useEffect(() => {
     loadStoredData();
   }, []);
 
+  // Handle next flight (reset image and extraction state)
   const handleNextFlight = () => {
     setImage(null);
     setExtracted(false);
   };
 
+  // Reset all stored data
   const handleResetData = async () => {
     if (window.confirm("This will delete all stored data. Proceed?")) {
       try {
@@ -55,6 +59,7 @@ const App = () => {
     }
   };
 
+  // Delete a specific record
   const handleDeleteRecord = async (id) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
       try {
@@ -71,6 +76,7 @@ const App = () => {
     }
   };
 
+  // Capture an image (camera or upload) and generate a thumbnail
   const handleCaptureImage = (capturedImage) => {
     const generateThumbnail = (image) => {
       const canvas = document.createElement("canvas");
@@ -94,6 +100,7 @@ const App = () => {
     generateThumbnail(capturedImage);
   };
 
+  // Send data via email using mailto link
   const sendEmailLocally = () => {
     if (storedData.length === 0) {
       alert("No data to send.");
@@ -119,10 +126,12 @@ const App = () => {
     window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
   };
 
+  // Open modal to display full-size image
   const openModal = (imageSrc) => {
     setModalImage(imageSrc);
   };
 
+  // Close image modal
   const closeModal = () => {
     setModalImage(null);
   };
@@ -139,12 +148,14 @@ const App = () => {
           <h1>Docket Uploader</h1>
           <h2>Running Total: {runningTotal.toFixed(2)} L</h2>
 
+          {/* Camera or Upload Section */}
           {!image && (
             <CameraCapture
               onCapture={(capturedImage) => handleCaptureImage(capturedImage)}
             />
           )}
 
+          {/* Text Extraction Section */}
           {image && (
             <button
               className={`extract-button ${!extracted ? "flash" : ""}`}
@@ -168,6 +179,7 @@ const App = () => {
             </>
           )}
 
+          {/* Stored Data Toggle Button */}
           <button
             className="toggle-button"
             onClick={() => setShowTable(!showTable)}
@@ -175,6 +187,7 @@ const App = () => {
             {showTable ? "Hide Stored Data" : "Show Stored Data"}
           </button>
 
+          {/* Stored Data Table */}
           <div className={`stored-data-container ${showTable ? "open" : "closed"}`}>
             {storedData.length > 0 ? (
               <table>
@@ -250,6 +263,7 @@ const App = () => {
             )}
           </div>
 
+          {/* Image Modal */}
           {modalImage && (
             <div className="modal">
               <div className="modal-content">
@@ -261,6 +275,7 @@ const App = () => {
             </div>
           )}
 
+          {/* Reset and Email Section */}
           <div className="button-container">
             <button className="reset-button" onClick={handleResetData}>
               Reset Data

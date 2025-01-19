@@ -414,3 +414,31 @@ h2:first-of-type {
 .email-button:hover {
   background-color: #45a049;
 }
+
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.menu button {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.menu button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+.report-container {
+  max-height: 600px; /* Adjust height based on your layout */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border: 1px solid #ddd; /* Optional: Add a border for clarity */
+  padding: 10px; /* Optional: Add padding for aesthetics */
+  margin: 20px 0;
+  background-color: #fff;
+}
