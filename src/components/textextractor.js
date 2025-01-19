@@ -82,9 +82,16 @@ const TextExtractor = ({ image, thumbnail, onSubmit }) => {
 
     try {
       const dataToSave = { ...formData, thumbnail }; // Include the thumbnail
-      await insertData(dataToSave); // Save data to Dexie
-      onSubmit(); // Refresh the parent component (if needed)
-      alert("Data submitted successfully!");
+      const result = await insertData(dataToSave); // Save data to Dexie
+
+      if (result.success) {
+        console.log("Data stored successfully:", dataToSave);
+        alert("Data submitted successfully!");
+        onSubmit(); // Refresh the parent component (if needed)
+      } else {
+        console.error("Failed to store data:", result.error);
+        alert(`Failed to submit data: ${result.error}`);
+      }
     } catch (error) {
       console.error("Error submitting form data:", error);
       alert("Failed to submit data.");
